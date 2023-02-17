@@ -11,11 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orders.Domain.Tests", "Orde
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orders.Domain.Infra", "Order.Domain.Infra\Orders.Domain.Infra.csproj", "{A8009942-A8A0-4A78-9407-69715C6546C5}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Itens de Solução", "Itens de Solução", "{1A54C886-919C-4C26-8DC4-38904699752A}"
-	ProjectSection(SolutionItems) = preProject
-		.github\workflows\ci.yaml = .github\workflows\ci.yaml
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
