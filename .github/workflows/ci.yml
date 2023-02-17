@@ -30,21 +30,56 @@ jobs:
       with:
         dotnet-version: 7.0.x
 
-    - name: Restore dependencies
-      run: dotnet restore $SOLUTION
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v1
+      with:
+        path: ~\sonar\cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
 
-    - name: Coverlet
-      run: |
-        dotnet tool install --global dotnet-sonarscanner
-        dotnet tool install --global coverlet.console
-        dotnet tool install --global dotnet-reportgenerator-globaltool
+    - name: Cache SonarCloud scanner
+      id: cache-sonar-scanner
+      uses: actions/cache@v1
+      with:
+        path: .\.sonar\scanner
+        key: ${{ runner.os }}-sonar-scanner
+        restore-keys: ${{ runner.os }}-sonar-scanner
 
-    - name: Build and analyze
+    - name: Install SonarCloud scanner
+      if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+      run: dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+
+    - name: Install project dependencies
+      run: dotnet restore
+
+    - name: Test and analyze
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        dotnet-sonarscanner begin /k:"guilhermelemke_venda_api" /o:"guilhermelemke" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io/" /d:sonar.cs.opencover.reportsPaths="coverage.opencover.xml"
-        dotnet build $SOLUTION --configuration $BUILD_CONFIG --no-restore
-        dotnet test $SOLUTION --configuration $BUILD_CONFIG /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=coverage.opencover.xml
-        dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        ./.sonar/scanner/dotnet-sonarscanner begin /k:"guilhermelemke_venda_api" /o:"guilhermelemke" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+        dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover -l trx
+        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+
+    #- name: Restore dependencies
+    #  run: dotnet restore $SOLUTION
+
+    #- name: Coverlet
+    #  run: |
+    #    dotnet tool install --global dotnet-sonarscanner
+    #    dotnet tool install --global coverlet.console
+    #    dotnet tool install --global dotnet-reportgenerator-globaltool
+
+    #- name: Build and analyze
+    #  env:
+    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    #  run: |
+    #    dotnet-sonarscanner begin /k:"guilhermelemke_venda_api" /o:"guilhermelemke" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io/" /d:sonar.cs.opencover.reportsPaths="coverage.opencover.xml"
+    #    dotnet build $SOLUTION --configuration $BUILD_CONFIG --no-restore
+    #    dotnet test $SOLUTION --configuration $BUILD_CONFIG /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=coverage.opencover.xml
+    #    dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
