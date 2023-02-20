@@ -14,7 +14,7 @@ namespace Orders.Domain.Tests.CommandTests
             var _validCommand = new ChangeOrderStatusToCancelledCommand(CreateOrderHelper.ReturnOrderWaitingForPayment().Id);
             _validCommand.Validate();
 
-            Assert.AreEqual(_validCommand.Valid, true);
+            Assert.AreEqual(true, _validCommand.Valid);
         }
 
         [TestMethod]
@@ -23,7 +23,7 @@ namespace Orders.Domain.Tests.CommandTests
             var _invalidCommand = new ChangeOrderStatusToCancelledCommand(Guid.Empty);
             _invalidCommand.Validate();
 
-            Assert.AreEqual(_invalidCommand.Valid, false);
+            Assert.AreEqual(false, _invalidCommand.Valid);
         }
     }
 }

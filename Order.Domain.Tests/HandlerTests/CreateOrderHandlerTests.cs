@@ -26,14 +26,14 @@ namespace Orders.Domain.Tests.HandlerTests
         public void Dado_um_pedido_invalido_deve_interromper_a_execucao()
         {
             _result = (GenericCommandResult)_handler.Handle(_invalidCommand);
-            Assert.AreEqual(_result.Success, false);
+            Assert.AreEqual(false, _result.Success);
         }
 
         [TestMethod]
         public void Dado_um_pedido_valido_deve_criar_vendedor()
         {
             _result = (GenericCommandResult)_handler.Handle(_validCommand);
-            Assert.AreEqual(_result.Success, true);
+            Assert.AreEqual(true, _result.Success);
         }
     }
 }

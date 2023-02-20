@@ -11,7 +11,7 @@ namespace Orders.Domain.Tests.EntityTests
         [TestMethod]
         public void Dado_um_novo_produto_o_mesmo_deve_ser_criado()
         {
-            Assert.AreEqual(_validProduct.ProductName, "Caneta");
+            Assert.AreEqual("Caneta", _validProduct.ProductName);
         }
     }
 }

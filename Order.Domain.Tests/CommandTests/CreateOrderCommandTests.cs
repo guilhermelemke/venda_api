@@ -25,7 +25,7 @@ namespace Orders.Domain.Tests.CommandTests
             _validCommand = new CreateOrderCommand(DateTime.Now, _seller, _products);
             _validCommand.Validate();
 
-            Assert.AreEqual(_validCommand.Valid, true);
+            Assert.AreEqual(true, _validCommand.Valid);
         }
 
         [TestMethod]
@@ -37,7 +37,7 @@ namespace Orders.Domain.Tests.CommandTests
             _invalidCommand = new CreateOrderCommand(DateTime.Now, _seller, _products);
             _invalidCommand.Validate();
 
-            Assert.AreEqual(_invalidCommand.Valid, false);
+            Assert.AreEqual(false, _invalidCommand.Valid);
         }
 
         [TestMethod]
@@ -53,7 +53,7 @@ namespace Orders.Domain.Tests.CommandTests
             _invalidCommand = new CreateOrderCommand(DateTime.Now, _seller, _products);
             _invalidCommand.Validate();
 
-            Assert.AreEqual(_invalidCommand.Valid, false);
+            Assert.AreEqual(false, _invalidCommand.Valid);
         }
     }
 }

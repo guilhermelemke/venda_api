@@ -18,13 +18,13 @@ namespace Orders.Domain.Tests.CommandTests
         [TestMethod]
         public void Dado_um_comando_invalido()
         {
-            Assert.AreEqual(_invalidCommand.Valid, false);
+            Assert.AreEqual(false, _invalidCommand.Valid);
         }
 
         [TestMethod]
         public void Dado_um_comando_valido()
         {
-            Assert.AreEqual(_validCommand.Valid, true);
+            Assert.AreEqual(true, _validCommand.Valid);
         }
     }
 }

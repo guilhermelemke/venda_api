@@ -27,7 +27,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandCancel = new ChangeOrderStatusToCancelledCommand(CreateOrderHelper.ReturnOrderWaitingForPayment().Id);
             _result = (GenericCommandResult)_handlerWaitingPayment.Handle(_commandCancel);
 
-            Assert.AreEqual(_result.Success, true);
+            Assert.AreEqual(true, _result.Success);
         }
 
         [TestMethod]
@@ -36,7 +36,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandCancel = new ChangeOrderStatusToCancelledCommand(CreateOrderHelper.ReturnOrderPaymentApproved().Id);
             _result = (GenericCommandResult)_handlerPayed.Handle(_commandCancel);
 
-            Assert.AreEqual(_result.Success, true);
+            Assert.AreEqual(true, _result.Success);
         }
 
         [TestMethod]
@@ -45,7 +45,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandCancel = new ChangeOrderStatusToCancelledCommand(CreateOrderHelper.ReturnOrderCancelled().Id);
             _result = (GenericCommandResult)_handlerCancelled.Handle(_commandCancel);
 
-            Assert.AreEqual(_result.Success, false);
+            Assert.AreEqual(false, _result.Success);
         }
 
         [TestMethod]
@@ -54,7 +54,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandCancel = new ChangeOrderStatusToCancelledCommand(CreateOrderHelper.ReturnOrderShipped().Id);
             _result = (GenericCommandResult)_handlerShipped.Handle(_commandCancel);
 
-            Assert.AreEqual(_result.Success, false);
+            Assert.AreEqual(false, _result.Success);
         }
 
         [TestMethod]
@@ -63,7 +63,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandCancel = new ChangeOrderStatusToCancelledCommand(CreateOrderHelper.ReturnOrderCancelled().Id);
             _result = (GenericCommandResult)_handlerDelivered.Handle(_commandCancel);
 
-            Assert.AreEqual(_result.Success, false);
+            Assert.AreEqual(false, _result.Success);
         }
         #endregion
 
@@ -74,7 +74,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandPayed = new ChangeOrderStatusToPaymentApprovedCommand(CreateOrderHelper.ReturnOrderWaitingForPayment().Id);
             _result = (GenericCommandResult)_handlerWaitingPayment.Handle(_commandPayed);
 
-            Assert.AreEqual(_result.Success, true);
+            Assert.AreEqual(true, _result.Success);
         }
 
         [TestMethod]
@@ -83,7 +83,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandPayed = new ChangeOrderStatusToPaymentApprovedCommand(CreateOrderHelper.ReturnOrderPaymentApproved().Id);
             _result = (GenericCommandResult)_handlerPayed.Handle(_commandPayed);
 
-            Assert.AreEqual(_result.Success, false);
+            Assert.AreEqual(false, _result.Success);
         }
 
         [TestMethod]
@@ -92,7 +92,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandPayed = new ChangeOrderStatusToPaymentApprovedCommand(CreateOrderHelper.ReturnOrderCancelled().Id);
             _result = (GenericCommandResult)_handlerCancelled.Handle(_commandPayed);
 
-            Assert.AreEqual(_result.Success, false);
+            Assert.AreEqual(false, _result.Success);
         }
 
         [TestMethod]
@@ -101,7 +101,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandPayed = new ChangeOrderStatusToPaymentApprovedCommand(CreateOrderHelper.ReturnOrderShipped().Id);
             _result = (GenericCommandResult)_handlerShipped.Handle(_commandPayed);
 
-            Assert.AreEqual(_result.Success, false);
+            Assert.AreEqual(false, _result.Success);
         }
 
         [TestMethod]
@@ -110,7 +110,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandPayed = new ChangeOrderStatusToPaymentApprovedCommand(CreateOrderHelper.ReturnOrderCancelled().Id);
             _result = (GenericCommandResult)_handlerDelivered.Handle(_commandPayed);
 
-            Assert.AreEqual(_result.Success, false);
+            Assert.AreEqual(false, _result.Success);
         }
         #endregion
 
@@ -121,7 +121,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandShipped = new ChangeOrderStatusToSentToShipmentCommand(CreateOrderHelper.ReturnOrderWaitingForPayment().Id);
             _result = (GenericCommandResult)_handlerWaitingPayment.Handle(_commandShipped);
 
-            Assert.AreEqual(_result.Success, false);
+            Assert.AreEqual(false, _result.Success);
         }
 
         [TestMethod]
@@ -130,7 +130,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandShipped = new ChangeOrderStatusToSentToShipmentCommand(CreateOrderHelper.ReturnOrderPaymentApproved().Id);
             _result = (GenericCommandResult)_handlerPayed.Handle(_commandShipped);
 
-            Assert.AreEqual(_result.Success, true);
+            Assert.AreEqual(true, _result.Success);
         }
 
         [TestMethod]
@@ -139,7 +139,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandShipped = new ChangeOrderStatusToSentToShipmentCommand(CreateOrderHelper.ReturnOrderCancelled().Id);
             _result = (GenericCommandResult)_handlerCancelled.Handle(_commandShipped);
 
-            Assert.AreEqual(_result.Success, false);
+            Assert.AreEqual(false, _result.Success);
         }
 
         [TestMethod]
@@ -148,7 +148,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandShipped = new ChangeOrderStatusToSentToShipmentCommand(CreateOrderHelper.ReturnOrderShipped().Id);
             _result = (GenericCommandResult)_handlerShipped.Handle(_commandShipped);
 
-            Assert.AreEqual(_result.Success, false);
+            Assert.AreEqual(false, _result.Success);
         }
 
         [TestMethod]
@@ -157,7 +157,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandShipped = new ChangeOrderStatusToSentToShipmentCommand(CreateOrderHelper.ReturnOrderCancelled().Id);
             _result = (GenericCommandResult)_handlerDelivered.Handle(_commandShipped);
 
-            Assert.AreEqual(_result.Success, false);
+            Assert.AreEqual(false, _result.Success);
         }
         #endregion
 
@@ -168,7 +168,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandDelivered = new ChangeOrderStatusToDeliveredCommand(CreateOrderHelper.ReturnOrderWaitingForPayment().Id);
             _result = (GenericCommandResult)_handlerWaitingPayment.Handle(_commandDelivered);
 
-            Assert.AreEqual(_result.Success, false);
+            Assert.AreEqual(false, _result.Success);
         }
 
         [TestMethod]
@@ -177,7 +177,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandDelivered = new ChangeOrderStatusToDeliveredCommand(CreateOrderHelper.ReturnOrderPaymentApproved().Id);
             _result = (GenericCommandResult)_handlerPayed.Handle(_commandDelivered);
 
-            Assert.AreEqual(_result.Success, false);
+            Assert.AreEqual(false, _result.Success);
         }
 
         [TestMethod]
@@ -186,7 +186,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandDelivered = new ChangeOrderStatusToDeliveredCommand(CreateOrderHelper.ReturnOrderCancelled().Id);
             _result = (GenericCommandResult)_handlerCancelled.Handle(_commandDelivered);
 
-            Assert.AreEqual(_result.Success, false);
+            Assert.AreEqual(false, _result.Success);
         }
 
         [TestMethod]
@@ -195,7 +195,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandDelivered = new ChangeOrderStatusToDeliveredCommand(CreateOrderHelper.ReturnOrderShipped().Id);
             _result = (GenericCommandResult)_handlerShipped.Handle(_commandDelivered);
 
-            Assert.AreEqual(_result.Success, true);
+            Assert.AreEqual(true, _result.Success);
         }
 
         [TestMethod]
@@ -204,7 +204,7 @@ namespace Orders.Domain.Tests.HandlerTests
             _commandDelivered = new ChangeOrderStatusToDeliveredCommand(CreateOrderHelper.ReturnOrderCancelled().Id);
             _result = (GenericCommandResult)_handlerDelivered.Handle(_commandDelivered);
 
-            Assert.AreEqual(_result.Success, false);
+            Assert.AreEqual(false, _result.Success);
         }
         #endregion
     }

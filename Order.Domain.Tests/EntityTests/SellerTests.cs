@@ -11,10 +11,10 @@ namespace Orders.Domain.Tests.EntityTests
         [TestMethod]
         public void Dado_um_novo_vendedor_o_mesmo_deve_ser_criado()
         {
-            Assert.AreEqual(_validSeller.Cpf, "12345678909");
-            Assert.AreEqual(_validSeller.Name, "Seller Name");
-            Assert.AreEqual(_validSeller.Email, "seller.name@email.com");
-            Assert.AreEqual(_validSeller.Phone, "+55(11)11234-5678");
+            Assert.AreEqual("12345678909", _validSeller.Cpf);
+            Assert.AreEqual("Seller Name", _validSeller.Name);
+            Assert.AreEqual("seller.name@email.com", _validSeller.Email);
+            Assert.AreEqual("+55(11)11234-5678", _validSeller.Phone);
         }
     }
 }
