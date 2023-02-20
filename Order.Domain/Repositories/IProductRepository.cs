@@ -8,6 +8,6 @@ namespace Orders.Domain.Repositories
         void Update(Product product);
         Product GetById(Guid id);
         IEnumerable<Product> GetAll();
-        Product GetByName(string name);
+        Product GetByName(string productName);
     }
 }
