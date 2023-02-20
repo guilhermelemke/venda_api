@@ -1,3 +1,71 @@
+#name: CI
+
+#on:
+#  push:
+#    branches:
+#      - main
+#  pull_request:
+#    branches: 
+#      - main
+
+#jobs:
+#  build:
+#    name: Build, test and analyze
+#    runs-on: ubuntu-latest
+#    env:
+#      BUILD_CONFIG: 'Release'
+#      SOLUTION: 'tech-test-payment-api.sln'
+
+#    steps:
+#    - name: Cancel Workflow Action
+#      uses: styfle/cancel-workflow-action@0.11.0
+      
+#    - name: Checkout
+#      uses: actions/checkout@v3.3.0
+#      with:
+#        fetch-depth: 0
+
+#    - name: Setup .NET
+#      uses: actions/setup-dotnet@v3
+#      with:
+#        dotnet-version: 7.0.x
+
+#    - name: Cache SonarCloud packages
+#      uses: actions/cache@v1
+#      with:
+#        path: ~\sonar\cache
+#        key: ${{ runner.os }}-sonar
+#        restore-keys: ${{ runner.os }}-sonar
+
+#    - name: Cache SonarCloud scanner
+#      id: cache-sonar-scanner
+#      uses: actions/cache@v1
+#      with:
+#        path: .\.sonar\scanner
+#        key: ${{ runner.os }}-sonar-scanner
+#        restore-keys: ${{ runner.os }}-sonar-scanner
+
+#    - name: Install SonarCloud scanner
+#      if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+#      run: dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+
+#    - name: Install project dependencies
+#      run: dotnet restore
+
+#    - name: Test and analyze
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#      run: |
+#        ./.sonar/scanner/dotnet-sonarscanner begin /k:"guilhermelemke_venda_api" /o:"guilhermelemke" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+#        dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover -l trx
+#        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+
+#    - name: Build
+#      run: dotnet build --configuration Release --no-restore
+
+
+
 name: CI
 
 on:
@@ -8,20 +76,23 @@ on:
     branches: 
       - main
 
+env:
+  BUILD_CONFIG: 'Release'
+  SOLUTION_PATH: 'tech-test-payment-api.sln'
+  TEST_PROJECT_PATH: 'Order.Domain.Tests/Orders.Domain.Tests.csproj'
+  TEST_PROJECT_FOLDER: 'Order.Domain.Tests/'
+
 jobs:
   build:
     name: Build, test and analyze
     runs-on: ubuntu-latest
-    env:
-      BUILD_CONFIG: 'Release'
-      SOLUTION: 'tech-test-payment-api.sln'
 
     steps:
     - name: Cancel Workflow Action
       uses: styfle/cancel-workflow-action@0.11.0
-      
-    - name: Checkout
-      uses: actions/checkout@v3.3.0
+
+    - name: Checkout code
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
@@ -30,56 +101,74 @@ jobs:
       with:
         dotnet-version: 7.0.x
 
-    - name: Cache SonarCloud packages
-      uses: actions/cache@v1
+    - name: Install Dependencies
+      run: |
+        dotnet tool install --global dotnet-sonarscanner
+        dotnet tool install --global coverlet.console
+        dotnet tool install --global dotnet-reportgenerator-globaltool
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+    - name: Build
+      run: dotnet build ${{ env.SOLUTION_PATH }} --configuration ${{ env.BUILD_CONFIG }} --no-restore
+
+    - name: Add coverlet to project
+      run: |
+         dotnet add ${{ env.TEST_PROJECT_PATH }} package coverlet.msbuild
+
+    - name: Add TestLogger to project
+      run: |
+         dotnet add ${{ env.TEST_PROJECT_PATH }} package XunitXml.TestLogger
+
+    - name: Test
+      run: |
+        dotnet test ${{ env.SOLUTION_PATH }} \
+                    /p:CollectCoverage=true \
+                    /p:CoverletOutputFormat=\"opencover,cobertura\" \
+                    /p:CoverletOutput=results/result \
+                    --test-adapter-path:. --logger:"xunit;LogFilePath=results/result.xunit.xml"
+
+    - name: Generate Report
+      run: |
+        reportgenerator "-reports:${{ env.TEST_PROJECT_FOLDER }}/results/result.opencover.xml" \
+                          "-targetdir:${{ env.TEST_PROJECT_FOLDER }}/results/Cobertura" \
+                          "-reporttypes:Cobertura;HTMLInline;HTMLChart"
+    
+    - name: Upload Coverage
+      uses: actions/upload-artifact@v3
       with:
-        path: ~\sonar\cache
-        key: ${{ runner.os }}-sonar
-        restore-keys: ${{ runner.os }}-sonar
+        name: coverage
+        path: ${{ env.TEST_PROJECT_FOLDER }}/results/result.opencover.xml
 
-    - name: Cache SonarCloud scanner
-      id: cache-sonar-scanner
-      uses: actions/cache@v1
+  sonar:
+    needs: build
+    name: Sonar Analyze
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
       with:
-        path: .\.sonar\scanner
-        key: ${{ runner.os }}-sonar-scanner
-        restore-keys: ${{ runner.os }}-sonar-scanner
+        fetch-depth: 0
 
-    - name: Install SonarCloud scanner
-      if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-      run: dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
+    - name: Install Dependencies
+      run: |
+        dotnet tool install --global dotnet-sonarscanner
+        dotnet tool install --global coverlet.console
+        dotnet tool install --global dotnet-reportgenerator-globaltool
 
-    - name: Install project dependencies
-      run: dotnet restore
+    - uses: actions/download-artifact@v3
+      with:
+        name: coverage
+        path: results/
 
-    - name: Test and analyze
+    - name: Build and analyze
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        ./.sonar/scanner/dotnet-sonarscanner begin /k:"guilhermelemke_venda_api" /o:"guilhermelemke" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-        dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover -l trx
-        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-
-
-    #- name: Restore dependencies
-    #  run: dotnet restore $SOLUTION
-
-    #- name: Coverlet
-    #  run: |
-    #    dotnet tool install --global dotnet-sonarscanner
-    #    dotnet tool install --global coverlet.console
-    #    dotnet tool install --global dotnet-reportgenerator-globaltool
-
-    #- name: Build and analyze
-    #  env:
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    #  run: |
-    #    dotnet-sonarscanner begin /k:"guilhermelemke_venda_api" /o:"guilhermelemke" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io/" /d:sonar.cs.opencover.reportsPaths="coverage.opencover.xml"
-    #    dotnet build $SOLUTION --configuration $BUILD_CONFIG --no-restore
-    #    dotnet test $SOLUTION --configuration $BUILD_CONFIG /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=coverage.opencover.xml
-    #    dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        dotnet restore ${{ env.SOLUTION_PATH }}
+        dotnet-sonarscanner begin /k:"guilhermelemke_venda_api" /o:"guilhermelemke" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths=results/result.opencover.xml
+        dotnet build --no-restore ${{ env.SOLUTION_PATH }}
+        dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
